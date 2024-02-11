@@ -8,8 +8,7 @@ services:
     #    ports:
     #      - 127.0.0.1:5432:5432
     volumes:
-      - nextcloud_aio_database:/var/lib/postgresql/data:rw
-      - nextcloud_aio_database_dump:/mnt/data:rw
+      - database:/var/lib/postgresql/data:rw
     environment:
       - POSTGRES_PASSWORD=secretabcdef
       - POSTGRES_DB=postgres
@@ -18,19 +17,7 @@ services:
       - db-network
   client:
     image: postgres:latest
-    command:
-      - 'bash'
-      - '-c'
-      - >
-        "'
-        while true;
-        do 
-          sleep 1;
-        done
-        '"
-    volumes:
-      - nextcloud_aio_database:/var/lib/postgresql/data:rw
-      - nextcloud_aio_database_dump:/mnt/data:rw
+    command: ["bash", "-c", "while true; do sleep 1; done"]
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PASSWORD=secretabcdef
@@ -41,16 +28,7 @@ services:
       - db-network
   debug-tools:
     image: pnnlmiscscripts/debug-toolbox:latest
-    command:
-      - 'bash'
-      - '-c'
-      - >
-        "'
-        while true;
-        do 
-          sleep 1;
-        done
-        '"
+    command: ["bash", "-c", "while true; do sleep 1; done"]
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PASSWORD=secretabcdef
@@ -59,5 +37,7 @@ services:
       - 'PG_TEST_CMD=psql -d "postgresql://postgres:secretabcdef@db:5432/postgres" -c "select now()"'
     networks:
       - db-network
+volumes:
+  database:
 networks:
   db-network:
